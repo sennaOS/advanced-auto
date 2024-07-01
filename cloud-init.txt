@@ -1,0 +1,36 @@
+#cloud-config
+package_upgrade: true
+packages:
+  - nginx
+  - firewalld
+
+hostname: azure-webserver-cloudinit
+prefer_fqdn_over_hostname: false
+create_hostname_file: true
+
+timezone: Europe/Zagreb
+
+users:
+  - name: admin-user
+    groups: admin-user, sudo
+    lock_passwd: false
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCX04qp6UcjNLJA2+/b/zOl5CDU3V41cK6QXhlp8yVwpLfjdtUO4oKKiM1R39gqsBSI0qVqwtKqMtFg0/nQLrGY2G0IVffuWaa9eRmfP1/ZH1XXJ/zvEITL+sgeGzhK5fDDK1ebWHWBORVRQ4unZXejlXpsucJ4jJV1Ar3RnVqgQ4QtdTci62h6mK5Cg3LYL51sOMzosu71WVlsTYzPzav5i2ANbfX499LoCrxU8QNw1X4gd8hasLfT3JgNw+NWMD+D7UF3KhCPbgEmIwjdW34jiWbpuHxdMvSdvOtzmZ050zAU4t3JbNKKiuYuS/1E82ObZO3FfeYMf63x2K9JAOiIZY/631oyzkUls9v/hYZEKbwjiaWlbIA/ti/3G6ltnJrevqAlqg5nTvfqspsTc+wCGk6Q7yrNW3sV0gL4hrHGylA5MINo1yasGc3SDdChCU7BfW+mlXz86EH/BTeQ7uJkugVsqJL0AdO3jIVCpquVh9EF2ISBq6yp4EEycGr61iE= adriano\adriano@Adriano
+
+write_files:
+  - owner: www-data:www-data
+    path: /var/www/html/index.nginx-debian.html
+    defer: true
+    content: |
+      Cloud init > cloudbase init
+
+runcmd:
+  - apt -y remove ufw
+  - systemctl enable nginx
+  - systemctl start nginx
+  - systemctl enable firewalld
+  - systemctl start firewalld
+  - firewall-cmd --add-service=http --per
+  - firewall-cmd --rel
